@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import br.com.loja.api.model.repositories.OperacaoRepository;
 import br.com.loja.api.model.repositories.OperacaoRepositoryPaging;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/operacoes")
 public class OperacaoController {
 	
@@ -40,7 +42,7 @@ public class OperacaoController {
 	
 	@GetMapping("pagina/{numeroPagina}")
 	public Iterable<Operacao> listarPaginada(@PathVariable int numeroPagina){
-		Pageable page = PageRequest.of(numeroPagina, 3);
+		Pageable page = PageRequest.of(numeroPagina, 10);
 		return operacaoRepositoryPaging.findAll(page);
 	}
 	
