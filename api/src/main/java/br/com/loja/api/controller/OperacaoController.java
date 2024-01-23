@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.loja.api.model.entities.Operacao;
-import br.com.loja.api.model.repositories.OperacaoRepository;
-import br.com.loja.api.model.repositories.OperacaoRepositoryPaging;
+import br.com.loja.api.model.treatments.OperacaoTreatment;
 
 @RestController
 @CrossOrigin("*")
@@ -26,40 +26,36 @@ import br.com.loja.api.model.repositories.OperacaoRepositoryPaging;
 public class OperacaoController {
 	
 	@Autowired
-	private OperacaoRepository operacaoRepository;
-	@Autowired
-	private OperacaoRepositoryPaging operacaoRepositoryPaging;
-
-	@GetMapping
-	public Iterable<Operacao> listar(){
-		return operacaoRepository.findAll();
-	}
+	private OperacaoTreatment operacaoTreatment;
 	
 	@GetMapping("/{id}")
 	public Optional<Operacao> listar(@PathVariable long id){
-		return operacaoRepository.findById(id);
+		return operacaoTreatment.consultaPorId(id);
 	}
 	
 	@GetMapping("pagina/{numeroPagina}")
 	public Iterable<Operacao> listarPaginada(@PathVariable int numeroPagina){
-		Pageable page = PageRequest.of(numeroPagina, 10);
-		return operacaoRepositoryPaging.findAll(page);
+		return operacaoTreatment.consultaPaginada(numeroPagina);
+	}
+	
+	@GetMapping("/datas/{numeroPagina}")
+	public Page<Operacao> listarPagina(@RequestParam LocalDateTime datai, @RequestParam LocalDateTime dataf, Pageable pageable, @PathVariable int numeroPagina){
+		return operacaoTreatment.consultaPaginadaPorData(datai, dataf, pageable, numeroPagina);
 	}
 	
 	@PostMapping
 	public Operacao inserir(@RequestBody Operacao op) {
-		op.setData(LocalDateTime.now());
-		return operacaoRepository.save(op);
+		return operacaoTreatment.inserirOperacao(op);
 	}
 	
 	@PutMapping
 	public Operacao atualizar(@RequestBody Operacao op) {
-		return operacaoRepository.save(op);
+		return operacaoTreatment.inserirOperacao(op);
 	}	
 	
 	@DeleteMapping("/{id}")
 	public void deletarId(@PathVariable long id) {
-		operacaoRepository.deleteById(id);
+		operacaoTreatment.deletarOperacao(id);
 	}
 	
 }
