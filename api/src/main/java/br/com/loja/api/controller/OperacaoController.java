@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import br.com.loja.api.model.entities.Operacao;
+import br.com.loja.api.model.integration.ApiIntegrada;
+import br.com.loja.api.model.integration.Fee;
 import br.com.loja.api.model.treatments.OperacaoTreatment;
 
 @RestController
@@ -56,6 +60,15 @@ public class OperacaoController {
 	@DeleteMapping("/{id}")
 	public void deletarId(@PathVariable long id) {
 		operacaoTreatment.deletarOperacao(id);
+	}
+	
+	@GetMapping("/teste")
+	public String teste() {
+		RestTemplate restTemplate = new RestTemplate();
+		String apiUrl = "https://api.infinitepay.io/v2/products/pricings";
+		ResponseEntity<ApiIntegrada> responseEntity = restTemplate.getForEntity(apiUrl, ApiIntegrada.class);
+		 
+		return responseEntity.getBody().getData().getPricings().getMpos().getD1Antecipation().getMastercard().getFees().get(0).getPercentage();
 	}
 	
 }
